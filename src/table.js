@@ -46,20 +46,27 @@ kernel.add('table', function() {
       var table = document.createElement('table'),
           row = hooks.row(columns, -1);
       table.appendChild(document.createElement('thead')).appendChild(row[0]);
-      columns.forEach(function(column, index) { row[1].appendChild(hooks.cell(column, index)); });
+      columns.forEach(function(value, index) { row[1].appendChild(hooks.cell(value, value, index, null)); });
       return [table, table.appendChild(document.createElement('tbody'))];
     },
     row: function(value, index) {
       var row = document.createElement('tr');
       return [row, row];
     },
-    cell: function(value, index, key) {
-      return document.createElement(key == undefined ? 'th' : 'td').appendChild(document.createTextNode(value)).parentNode;
+    cell: function(key, value, index, row) {
+      return document.createElement(row ? 'td' : 'th').appendChild(document.createTextNode(value)).parentNode;
     }
   };
 
   return function(element, data, columns, hooks) {
     
+    if (!columns) {
+      columns = {};
+      data.forEach(function(row) {
+        Object.keys(row).forEach(function(column) { columns[column] = 1; });
+      });
+      columns = Object.keys(columns);
+    }
     if (!hooks) hooks = format;
     else for (var type in format)
       if (typeof hooks[type] != 'function')
@@ -75,10 +82,10 @@ kernel.add('table', function() {
       table.insertBefore(row[0], table.childNodes[index]);
       parent.value.splice(index, 0, value);
       
-      return new Node(row[1], {}, parent, function(parent, value, index) {
+      return new Node(row[1], value, parent, function(parent, value, index) {
       
         var row = parent.element;
-        row.insertBefore(hooks.cell(value, index, columns[index]), row.childNodes[index]);
+        row.insertBefore(hooks.cell(columns[index], value, index, parent.value), row.childNodes[index]);
         return parent.value[columns[index]] = value;
         
       }, function(previous, index) {

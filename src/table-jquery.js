@@ -47,23 +47,30 @@
   
   var format = {
     table: function(columns, hooks) {
-      var table = $('<table>'),
+      var table = document.createElement('table'),
           row = hooks.row(columns, -1);
-      table.append('<thead>').append(row[0]);
-      $.each(columns, function(index, column) { row[1].append(hooks.cell(column, index)); });
-      return [table, $('<tbody>').appendTo(table)];
+      table.appendChild(document.createElement('thead')).appendChild(row[0]);
+      columns.forEach(function(value, index) { row[1].appendChild(hooks.cell(value, value, index, null)); });
+      return [table, table.appendChild(document.createElement('tbody'))];
     },
     row: function(value, index) {
-      var row = $('<tr>')
+      var row = document.createElement('tr');
       return [row, row];
     },
-    cell: function(value, index, key) {
-      return $(key == undefined ? '<th>' : '<td>').text(value);
+    cell: function(key, value, index, row) {
+      return document.createElement(row ? 'td' : 'th').appendChild(document.createTextNode(value)).parentNode;
     }
   };
   
   $.fn.table = function(data, columns, hooks) {
     
+    if (!columns) {
+      columns = {};
+      data.forEach(function(row) {
+        Object.keys(row).forEach(function(column) { columns[column] = 1; });
+      });
+      columns = Object.keys(columns);
+    }
     if (!hooks) hooks = format;
     else for (var type in format)
       if (typeof hooks[type] != 'function')
@@ -80,10 +87,10 @@
       else table.prepend(row[0]);
       parent.value.splice(index, 0, value);
       
-      return new Node(row[1], {}, parent, function(parent, value, index) {
+      return new Node(row[1], value, parent, function(parent, value, index) {
       
         var row = parent.element,
-            cell = hooks.cell(value, index, columns[index]);
+            cell = hooks.cell(columns[index], value, index, parent.value);
         if (index) row.contents().eq(index-1).after(cell);
         else row.prepend(cell);
         return parent.value[columns[index]] = value;
