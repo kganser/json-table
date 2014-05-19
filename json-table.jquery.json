@@ -1,0 +1,25 @@
+{
+  "name": "json-table",
+  "title": "jQuery JSON table",
+  "description": "jQuery plugin for rendering custom tables from JSON data.",
+  "keywords": ["table", "json", "ui"],
+  "version": "0.1.0",
+  "author": {
+    "name": "Klaus Ganser",
+    "url": "http://kganser.com"
+  },
+  "maintainers": [{
+    "name": "Klaus Ganser",
+    "url": "http://kganser.com"
+  }],
+  "licenses": [{
+    "type": "MIT",
+    "url": "http://opensource.org/licenses/MIT"
+  }],
+  "bugs": "https://github.com/kganser/json-table/issues",
+  "homepage": "http://kganser.com/json-table.html",
+  "docs": "http://kganser.com/json-table.html",
+  "dependencies": {
+    "jquery": ">=1.0"
+  }
+}

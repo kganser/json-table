@@ -1,6 +1,6 @@
-// Copyright 2011, Klaus Ganser <kganser.com>
-// Dual licensed under the MIT or GPL Version 2 licenses.
-// http://jquery.org/license
+// Copyright 2011, Klaus Ganser <http://kganser.com>
+// MIT Licensed, with this copyright and permission notice
+// <http://opensource.org/licenses/MIT>
 
 (function($) {
 
@@ -32,14 +32,11 @@
       if (removed[0]) this.removeFn(removed[0], index); 
       return this;
     },
-    replace: function(value, index) {
-      return this.remove(index).insert(value, index);
-    },
     sort: function(compare) {
       var sorted = this.children.slice().sort(compare);
       this.children.forEach(function(child, index) {
         if (child != sorted[index])
-          this.replace(sorted[index].value, index);
+          this.remove(index).insert(sorted[index].value, index);
       }.bind(this));
       return this;
     }
