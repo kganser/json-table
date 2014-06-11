@@ -2,7 +2,7 @@
 // MIT Licensed, with this copyright and permission notice
 // <http://opensource.org/licenses/MIT>
 
-kernel.add('table', function() {
+(window.kernel || {add: function(name, module) { window[name] = module(); }}).add('table', function() {
 
   var Node = function(element, value, parent, insert, remove) {
     this.element = element;
