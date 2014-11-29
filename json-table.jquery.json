@@ -17,8 +17,8 @@
     "url": "http://opensource.org/licenses/MIT"
   }],
   "bugs": "https://github.com/kganser/json-table/issues",
-  "homepage": "http://kganser.com/json-table.html",
-  "docs": "http://kganser.com/json-table.html",
+  "homepage": "http://json-table.kganser.com",
+  "docs": "http://json-table.kganser.com",
   "dependencies": {
     "jquery": ">=1.0"
   }
