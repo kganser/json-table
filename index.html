@@ -1,0 +1,312 @@
+<!doctype html>
+<html>
+  <head>
+    <title>json-table</title>
+    <meta charset="utf-8">
+    <meta name="description" content="A customizable client-side table renderer.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="canonical" href="http://json-table.kganser.com">
+    <link rel="stylesheet" href="http://kganser.com/css/common.css">
+    <link rel="stylesheet" href="http://kganser.com/css/prettify.css">
+    <style>
+      table {
+        font-size: 13px;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #777;
+        position: relative;
+      }
+      th {
+        font-weight: normal;
+        text-align: left;
+        background-image: linear-gradient(white 50%, #ddd);
+      }
+      #sorting th {
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+      }
+      th.asc:after,
+      th.desc:after {
+        content: "";
+        display: block;
+        height: 0;
+        width: 0;
+        float: right;
+        border: solid 5px transparent;
+        border-bottom: solid 5px #333;
+        border-top: none;
+        margin: 5px 0 0 5px;
+      }
+      th.desc:after {
+        border-bottom: none;
+        border-top: solid 5px #333;
+      }
+      th, td {
+        padding: 3px 5px;
+        border-style: solid;
+        border-color: #ddd;
+        border-width: 0 1px 1px 0;
+      }
+      #spreadsheet {
+        margin-bottom: 1em;
+      }
+      #spreadsheet td {
+        padding: 0;
+      }
+      td div {
+        display: block;
+        padding: 3px 5px;
+      }
+      td input {
+        display: none;
+        margin: 0;
+        padding: 3px 5px;
+        border: none;
+      }
+      .editing td {
+        padding: 0;
+      }
+      .editing td div {
+        display: none;
+      }
+      .editing td input {
+        display: block;
+      }
+      #spreadsheet .menu {
+        text-align: center;
+        padding: 0 3px;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+      }
+      .menu span {
+        display: inline-block;
+        background: url(/icons.png) no-repeat left;
+        vertical-align: bottom;
+        height: 16px;
+        width: 16px;
+        margin: 0 2px;
+        cursor: pointer;
+      }
+      .menu .add {
+        background-position: -40px 0;
+      }
+      .editing .menu .edit {
+        background-position: -20px 0;
+      }
+      .menu .delete {
+        background-position: -60px 0;
+      }
+      .menu .reorder {
+        background-position: -80px 0;
+        cursor: grab;
+        cursor: -webkit-grab;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="http://kganser.com">kganser.com</a>
+    <h1>json-table <a href="http://plugins.jquery.com/json-table/" target="_blank" class="jquery">available for <em>jQuery</em></a></h1>
+    <p>Json-table is a fully customizable client-side table renderer for displaying json data.  At its core, it supports generating a table backed by an array of javascript objects (via optional hooks for generating the table, row, and cell components) and primitive operations on the underlying data (removal, insertion, and sort) that automatically propagate to the DOM.</p>
+    <pre class="prettyprint">
+$(element).table(data, columns, format);</pre>
+    <p><code>columns</code> is an array of keys representing the columns of the table, which defaults to the set of all keys present in <code>data</code> when omitted.  <code>format</code> is an optional object providing one or more of three formatting hooks:</p>
+    <pre class="prettyprint">
+var format = {
+  table: function(columns, hooks) {
+    // columns is the array of columns provided or generated
+    // hooks is this format object
+    return [outerNode, innerNode];
+  },
+  row: function(value, index) {
+    // value is the object from data at index
+    return [outerNode, innerNode];
+  },
+  cell: function(key, value, index, row) {
+    // index is the column number
+    // row is the parent row's data object
+    return outerNode;
+  }
+};</pre>
+    <p>These hooks return one or two DOM nodes: <code>outerNode</code> is attached to the parent component's <code>innerNode</code>. The resulting json-table supports the following methods.  All but <code>get</code> are chainable.</p>
+    <ul>
+      <li><code>get<span class="params">(row, column)</span></code> returns value at cell, or object at <code>row</code> if <code>column</code> is omitted, or all data if neither is provided</li>
+      <li><code>insert<span class="params">(object, index)</span></code> inserts a row at <code>index</code> given its object data, or appends if <code>index</code> is omitted</li>
+      <li><code>insertAll<span class="params">(objects, index)</span></code> inserts all items in an array of objects, or appends if <code>index</code> is omitted</li>
+      <li><code>remove<span class="params">(index)</span></code> removes row at <code>index</code></li>
+      <li><code>sort<span class="params">(compare)</span></code> sorts rows in table with the given comparison function</li>
+    </ul>
+    <h2>Examples</h2>
+    <h3>Basic</h3>
+    <p>The most basic example simply generates a table whose columns are the keys of the data array's objects.</p>
+    <pre class="prettyprint">
+var data = [
+  {Company: 'Yahoo', CEO: 'Marissa Mayer', Founded: '1994', Headquarters: 'Sunnyvale, CA'},
+  {Company: 'Google', CEO: 'Larry Page', Founded: '1998', Headquarters: 'Mountain View, CA'},
+  {Company: 'Facebook', CEO: 'Mark Zuckerberg', Founded: '2004', Headquarters: 'Menlo Park, CA'},
+  {Company: 'Apple', CEO: 'Tim Cook', Founded: '1976', Headquarters: 'Cupertino, CA'}
+];
+$('#basic').table(data);</pre>
+    <div id="basic" class="scroll"></div>
+    <h3>Sorting Headers</h3>
+    <p>This example adds sorting functionality to the table by adding click handlers to its <code>th</code> elements via a custom <code>cell</code> formatter.</p>
+    <pre class="prettyprint">
+var table = $('#sorting').table(data, null, {
+  cell: (function(lastSorted, order) {
+    // keep track of last sorted header element and order
+    return function(value, index, key, row) {
+      // row is null for header cells
+      var elem = $(row ? '&lt;td>' : '&lt;th>').text(value);
+      if (!row) elem.click(function() {
+        if (lastSorted) lastSorted.className = '';
+        order = this == lastSorted ? -order : 1;
+        (lastSorted = this).className = order > 0 ? 'asc' : 'desc';
+        table.sort(function(a, b) {
+          return order * a[value].localeCompare(b[value]);
+        });
+      });
+      return elem[0];
+    };
+  })()
+});</pre>
+    <div id="sorting" class="scroll"></div>
+    <h3>Spreadsheet</h3>
+    <p>This example uses <a href="http://jsml.kganser.com">jsml</a> to generate an editable spreadsheet with fixed columns.</p>
+    <pre class="prettyprint">
+var spreadsheet = $('#spreadsheet').table(data, [''].concat(Object.keys(data[0])), {
+  table: function(columns, hooks) {
+    var body, head = hooks.row(columns, -1);
+    return [$.jsml({table: function(table) {
+      return [
+        {thead: columns.map(function(column) {
+          return {th: column ? column : {className: 'menu', children: [
+            {span: {
+              className: 'edit',
+              title: 'Edit',
+              onclick: function() {
+                table.className = table.className == 'editing' ? '' : 'editing';
+                try { table.getElementsByTagName('input')[0].focus(); } catch (e) {}}}},
+            {span: {
+              className: 'add',
+              title: 'Add Row',
+              onclick: function() {
+                spreadsheet.insert({}); }}}]}}})},
+        {tbody: function(e) { body = e; }}]; }}), body]; },
+  cell: function(key, value, index, row) {
+    return $.jsml({td: key
+      ? [{div: value}, {input: {
+          type: 'text',
+          value: value || '',
+          onkeyup: function(e) {
+            row[key] = this.previousSibling.textContent = this.value; }}}]
+      : {className: 'menu', children: [
+          {span: {
+            className: 'reorder',
+            title: 'Reorder',
+            onmousedown: function(e) {
+              var move, up, pos = spreadsheet.get().indexOf(row),
+                  style = $('&lt;style>* { cursor: -webkit-grabbing !important; cursor: grabbing !important; }&lt;/style>').appendTo('head'),
+                  boundaries = Array.prototype.slice.call(this.parentNode.parentNode.parentNode.childNodes, 0, -1).map(function(tr) {
+                    return tr.getBoundingClientRect().bottom; });
+              document.addEventListener('mousemove', move = function(e) {
+                var i = 0;
+                boundaries.some(function(y) { return e.clientY &lt; y || !++i; });
+                if (pos != i) spreadsheet.remove(pos).insert(row, pos = i);
+                e.preventDefault(); });
+              document.addEventListener('mouseup', up = function() {
+                document.removeEventListener('mousemove', move);
+                document.removeEventListener('mouseup', up);
+                style.remove(); }); }}},
+          {span: {
+            className: 'delete',
+            title: 'Delete',
+            onclick: function() {
+              spreadsheet.remove(spreadsheet.get().indexOf(row)); }}}]}}); }});</pre>
+    <div id="spreadsheet" class="scroll"></div>
+    <a class="git-banner" href="http://github.com/kganser/json-table"></a>
+    <script src="http://kganser.com/js/common.js"></script>
+    <script src="http://kganser.com/js/prettify.js"></script>
+    <script src="http://jsml.kganser.com/jsml.js"></script>
+    <script src="json-table.js"></script>
+    <script>
+      (function() {
+        var data = [
+          {Company: 'Yahoo', CEO: 'Marissa Mayer', Founded: '1994', Headquarters: 'Sunnyvale, CA'},
+          {Company: 'Google', CEO: 'Larry Page', Founded: '1998', Headquarters: 'Mountain View, CA'},
+          {Company: 'Facebook', CEO: 'Mark Zuckerberg', Founded: '2004', Headquarters: 'Menlo Park, CA'},
+          {Company: 'Apple', CEO: 'Tim Cook', Founded: '1976', Headquarters: 'Cupertino, CA'}
+        ];
+        table($('basic'), data);
+        var sortable = table($('sorting'), data, null, {
+          cell: (function(lastSorted, order) {
+            return function(key, value, index, row) {
+              var elem = document.createElement(row ? 'td' : 'th');
+              elem.textContent = value;
+              if (!row) elem.onclick = function() {
+                if (lastSorted) lastSorted.className = '';
+                order = this == lastSorted ? -order : 1;
+                (lastSorted = this).className = order > 0 ? 'asc' : 'desc';
+                sortable.sort(function(a, b) {
+                  return order * a[value].localeCompare(b[value]);
+                });
+              };
+              return elem;
+            };
+          })()
+        });
+        var spreadsheet = table($('spreadsheet'), data, [''].concat(Object.keys(data[0])), {
+          table: function(columns, hooks) {
+            var body, head = hooks.row(columns, -1);
+            return [jsml({table: function(table) {
+              return [
+                {thead: columns.map(function(column) {
+                  return {th: column ? column : {className: 'menu', children: [
+                    {span: {
+                      className: 'edit',
+                      title: 'Edit',
+                      onclick: function() {
+                        table.className = table.className == 'editing' ? '' : 'editing';
+                        try { table.getElementsByTagName('input')[0].focus(); } catch (e) {}}}},
+                    {span: {
+                      className: 'add',
+                      title: 'Add Row',
+                      onclick: function() {
+                        spreadsheet.insert({}); }}}]}}})},
+                {tbody: function(e) { body = e; }}]; }}), body]; },
+          cell: function(key, value, index, row) {
+            return jsml({td: key
+              ? [{div: value}, {input: {
+                  type: 'text',
+                  value: value || '',
+                  onkeyup: function(e) {
+                    row[key] = this.previousSibling.textContent = this.value; }}}]
+              : {className: 'menu', children: [
+                  {span: {
+                    className: 'reorder',
+                    title: 'Reorder',
+                    onmousedown: function(e) {
+                      var move, up, pos = spreadsheet.get().indexOf(row),
+                          style = document.body.appendChild(jsml(
+                            {style: {textContent: '* { cursor: grabbing !important; cursor: -webkit-grabbing !important; }'}})),
+                          boundaries = Array.prototype.slice.call(this.parentNode.parentNode.parentNode.childNodes, 0, -1).map(function(tr) {
+                            return tr.getBoundingClientRect().bottom; });
+                      document.addEventListener('mousemove', move = function(e) {
+                        var i = 0;
+                        boundaries.some(function(y) { return e.clientY < y || !++i; });
+                        if (pos != i) spreadsheet.remove(pos).insert(row, pos = i);
+                        e.preventDefault(); });
+                      document.addEventListener('mouseup', up = function() {
+                        document.removeEventListener('mousemove', move);
+                        document.removeEventListener('mouseup', up);
+                        style.parentNode.removeChild(style); }); }}},
+                  {span: {
+                    className: 'delete',
+                    title: 'Delete',
+                    onclick: function() {
+                      spreadsheet.remove(spreadsheet.get().indexOf(row)); }}}]}}); }});
+      })();
+    </script>
+  </body>
+</html>
