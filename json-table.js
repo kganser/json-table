@@ -1,4 +1,4 @@
-// Copyright 2011, Klaus Ganser <http://kganser.com>
+// Copyright Klaus Ganser <https://kganser.com>
 // MIT Licensed, with this copyright and permission notice
 // <http://opensource.org/licenses/MIT>
 

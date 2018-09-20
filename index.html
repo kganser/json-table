@@ -5,9 +5,9 @@
     <meta charset="utf-8">
     <meta name="description" content="A customizable client-side table renderer.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <link rel="canonical" href="http://json-table.kganser.com">
-    <link rel="stylesheet" href="http://kganser.com/css/common.css">
-    <link rel="stylesheet" href="http://kganser.com/css/prettify.css">
+    <link rel="canonical" href="https://json-table.kganser.com">
+    <link rel="stylesheet" href="//kganser.com/css/common.css">
+    <link rel="stylesheet" href="//kganser.com/css/prettify.css">
     <style>
       table {
         font-size: 13px;
@@ -107,8 +107,8 @@
     </style>
   </head>
   <body>
-    <a href="http://kganser.com">kganser.com</a>
-    <h1>json-table <a href="http://plugins.jquery.com/json-table/" target="_blank" class="jquery">available for <em>jQuery</em></a></h1>
+    <a href="https://kganser.com">kganser.com</a>
+    <h1>json-table <a href="https://plugins.jquery.com/json-table/" target="_blank" class="jquery">available for <em>jQuery</em></a></h1>
     <p>Json-table is a fully customizable client-side table renderer for displaying json data.  At its core, it supports generating a table backed by an array of javascript objects (via optional hooks for generating the table, row, and cell components) and primitive operations on the underlying data (removal, insertion, and sort) that automatically propagate to the DOM.</p>
     <pre class="prettyprint">
 $(element).table(data, columns, format);</pre>
@@ -173,7 +173,7 @@ var table = $('#sorting').table(data, null, {
 });</pre>
     <div id="sorting" class="scroll"></div>
     <h3>Spreadsheet</h3>
-    <p>This example uses <a href="http://jsml.kganser.com">jsml</a> to generate an editable spreadsheet with fixed columns.</p>
+    <p>This example uses <a href="https://jsml.kganser.com">jsml</a> to generate an editable spreadsheet with fixed columns.</p>
     <pre class="prettyprint">
 var spreadsheet = $('#spreadsheet').table(data, [''].concat(Object.keys(data[0])), {
   table: function(columns, hooks) {
@@ -225,10 +225,10 @@ var spreadsheet = $('#spreadsheet').table(data, [''].concat(Object.keys(data[0])
             onclick: function() {
               spreadsheet.remove(spreadsheet.get().indexOf(row)); }}}]}}); }});</pre>
     <div id="spreadsheet" class="scroll"></div>
-    <a class="git-banner" href="http://github.com/kganser/json-table"></a>
-    <script src="http://kganser.com/js/common.js"></script>
-    <script src="http://kganser.com/js/prettify.js"></script>
-    <script src="http://jsml.kganser.com/jsml.js"></script>
+    <a class="git-banner" href="https://github.com/kganser/json-table"></a>
+    <script src="//kganser.com/js/common.js"></script>
+    <script src="//kganser.com/js/prettify.js"></script>
+    <script src="//jsml.kganser.com/jsml.js"></script>
     <script src="json-table.js"></script>
     <script>
       (function() {
